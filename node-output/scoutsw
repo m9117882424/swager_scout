@@ -1,0 +1,1258 @@
+{
+  "openapi" : "3.0.1",
+  "info" : {
+    "title" : "СПИК - Сервис Программной Интеграции и Коммуникации",
+    "description" : "**СПИК** – Сервис Программной Интеграции и Коммуникации. \n\nСПИК является расширением для СКАУТ-Платформы, которое позволяет взаимодействовать с ней сторонним системам.<br>\n\n**СПИК позволяет:** <br>\nАвторизоваться в Системе СКАУТ.<br>\nПолучить доступ к Объектам Мониторинга.<br>\nПолучить Текущие данные по доступным Объектам Мониторинга.<br>\nПолучить Статистики, собираемые в системе СКАУТ. <br>\n\nСПИК может взаимодействовать с сторонними системами при помощи двух протоколов: <br>\nВ REST можно вести коммуникацию через стандартные HTTP запросы.<br>\nВ SOAP можно получить описание сервиса (его метаданные) на языке WSDL и сгенерировать прокси заглушки. Прокси заглушки позволяют удаленно вызывать методы сервиса. Таким образом появляется возможность быстро создавать клиентские приложения практически на любом современном языке программирования. Например, C#, Java, 1C и т.д.",
+    "contact" : {
+      "name" : "ГК СКАУТ",
+      "url" : "https://scout-gps.ru/",
+      "email" : "pr@scout-gps.ru"
+    },
+    "version" : "1.0"
+  },
+  "servers" : [ {
+    "url" : "http://login.scout-gps.ru"
+  }, {
+    "url" : "http://spic.scout365.ru"
+  } ],
+  "tags" : [ {
+    "name" : "Авторизация."
+  }, {
+    "name" : "Запрос объектов и групп объектов",
+    "description" : "Получение UnitId"
+  }, {
+    "name" : "Запрос водителей"
+  }, {
+    "name" : "Получение онлайн данных",
+    "description" : "Описание запроса для получение онлайн данных по объектам"
+  }, {
+    "name" : "Статистики данных"
+  }, {
+    "name" : "Запрос отчетов"
+  } ],
+  "paths" : {
+    "/spic/auth/rest/Login" : {
+      "post" : {
+        "tags" : [ "Авторизация." ],
+        "summary" : "Получение SessionId.",
+        "description" : "Авторизация в СКАУТ-Платформе через СПИК необходима для того, чтобы получить права на доступ к Объектам мониторинга и задать некоторые пользовательские настройки. <br>\nНапример, язык пользователя и часовой пояс.",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/rest_Login_body"
+              },
+              "examples" : {
+                "demo" : {
+                  "value" : "{\r\n      \"Login\":\"demo\",\r\n      \"Password\":\"demo\",\r\n      \"TimeZoneOlsonId\":\"Europe/Moscow\",\r\n      \"CultureName\":\"ru-ru\",\r\n      \"UiCultureName\":\"ru-ru\"\r\n}"
+                }
+              }
+            }
+          }
+        },
+        "responses" : {
+          "200" : {
+            "description" : "Успешная авторизация",
+            "content" : {
+              "application/json; charset=utf-8" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/inline_response_200"
+                },
+                "examples" : {
+                  "200" : {
+                    "value" : {
+                      "ExpireDate" : "/Date(1585582798095+0300)/",
+                      "IsAuthenticated" : true,
+                      "IsAuthorized" : true,
+                      "SessionId" : "e73755a1-f27f-4b1e-9c7d-a05249ca28f4",
+                      "UserId" : 10,
+                      "UserName" : "Демо Доступ (Продукты)"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/spic/units/rest/getAllUnitsPaged" : {
+      "post" : {
+        "tags" : [ "Запрос объектов и групп объектов" ],
+        "summary" : "Запрос всех объектов",
+        "description" : "Запрос объектов мониторинга позволяет получить список транспортных средств, доступных данному пользователю.",
+        "parameters" : [ {
+          "name" : "ScoutAuthorization",
+          "in" : "header",
+          "required" : false,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "string"
+          },
+          "example" : "52add63a-380f-4524-932e-e41a53b9cb8a"
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/rest_getAllUnitsPaged_body"
+              },
+              "examples" : {
+                "demo" : {
+                  "value" : "{\r\n      \"Offset\":0,\r\n      \"Count\":10\r\n}"
+                }
+              }
+            }
+          }
+        },
+        "responses" : {
+          "200" : {
+            "description" : "successful operation"
+          }
+        }
+      }
+    },
+    "/spic/units/rest/unitIds" : {
+      "get" : {
+        "tags" : [ "Запрос объектов и групп объектов" ],
+        "summary" : "Запрос всех UnitID доступных пользователю объектов",
+        "description" : "Получение всех UnitID доступных пользователю объектов",
+        "parameters" : [ {
+          "name" : "ScoutAuthorization",
+          "in" : "header",
+          "required" : false,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "string"
+          },
+          "example" : "e41e1e70-3682-4bff-8986-b72e2b8cba5c"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation"
+          }
+        }
+      }
+    },
+    "/spic/units/rest/getAllUnits" : {
+      "get" : {
+        "tags" : [ "Запрос объектов и групп объектов" ],
+        "summary" : "Запрос свойств всех доступных пользователю объектов, включая UnitID.",
+        "description" : "Получение свойств всех доступных пользователю объектов, включая UnitID.",
+        "parameters" : [ {
+          "name" : "ScoutAuthorization",
+          "in" : "header",
+          "required" : false,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "string"
+          },
+          "example" : "e41e1e70-3682-4bff-8986-b72e2b8cba5c"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation"
+          }
+        }
+      }
+    },
+    "/spic/units/rest/getUnits" : {
+      "post" : {
+        "tags" : [ "Запрос объектов и групп объектов" ],
+        "summary" : "Получение информации по заданным объектам",
+        "description" : "Запрос объектов по их UnitID",
+        "parameters" : [ {
+          "name" : "ScoutAuthorization",
+          "in" : "header",
+          "required" : false,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "string"
+          },
+          "example" : "e41e1e70-3682-4bff-8986-b72e2b8cba5c"
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/rest_getUnits_body"
+              },
+              "examples" : {
+                "demo" : {
+                  "value" : "{\"Requests\":[{\"ObjectId\":13635},{\"ObjectId\":13638},{\"ObjectId\":13639},{\"ObjectId\":13640},{\"ObjectId\":13634},{\"ObjectId\":13636},{\"ObjectId\":13637}]}"
+                }
+              }
+            }
+          }
+        },
+        "responses" : {
+          "200" : {
+            "description" : "successful operation"
+          }
+        }
+      }
+    },
+    "/spic/unitGroups/rest/" : {
+      "get" : {
+        "tags" : [ "Запрос объектов и групп объектов" ],
+        "summary" : "Запрос групп объектов",
+        "description" : "Получение всех групп доступных пользователю",
+        "parameters" : [ {
+          "name" : "ScoutAuthorization",
+          "in" : "header",
+          "required" : false,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "string"
+          },
+          "example" : "e41e1e70-3682-4bff-8986-b72e2b8cba5c"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation"
+          }
+        }
+      }
+    },
+    "/spic/drivers/rest/getDrivers" : {
+      "post" : {
+        "tags" : [ "Запрос водителей" ],
+        "summary" : "Получение информации по заданным водителям",
+        "description" : "Запрос водителей по их ID",
+        "parameters" : [ {
+          "name" : "ScoutAuthorization",
+          "in" : "header",
+          "required" : false,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "string"
+          },
+          "example" : "e41e1e70-3682-4bff-8986-b72e2b8cba5c"
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/rest_getDrivers_body"
+              },
+              "examples" : {
+                "demo" : {
+                  "value" : "{\"DriverIds\":[1,2,3]}"
+                }
+              }
+            }
+          }
+        },
+        "responses" : {
+          "200" : {
+            "description" : "successful operation"
+          }
+        }
+      }
+    },
+    "/spic/drivers/rest/getAvailableDrivers" : {
+      "get" : {
+        "tags" : [ "Запрос водителей" ],
+        "summary" : "Получение информации по всем доступным в учетной записи водителям",
+        "description" : "Запрос данных по всем водителям доступным в учетной записи",
+        "parameters" : [ {
+          "name" : "ScoutAuthorization",
+          "in" : "header",
+          "required" : false,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "string"
+          },
+          "example" : "e41e1e70-3682-4bff-8986-b72e2b8cba5c"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation"
+          }
+        }
+      }
+    },
+    "/spic/StatisticsController/rest/StartStatisticsSession" : {
+      "post" : {
+        "tags" : [ "Статистики данных" ],
+        "summary" : "Открыть сессию статистик",
+        "description" : "получение StatisticsSessionId",
+        "parameters" : [ {
+          "name" : "ScoutAuthorization",
+          "in" : "header",
+          "required" : false,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "string"
+          },
+          "example" : "52add63a-380f-4524-932e-e41a53b9cb8a"
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/rest_StartStatisticsSession_body"
+              },
+              "examples" : {
+                "demo" : {
+                  "value" : "{\r\n     \"Period\":\r\n     {\r\n         \"Begin\":\"/Date(1584428676205)/\",\r\n         \"End\":\"/Date(1584515076205)/\"\r\n     },\r\n \r\n     \"TargetObject\":\r\n     {\r\n          \"ObjectTypeId\":\"0F1E3A4A-88F5-4166-9BE8-76033DD85D08\",\r\n          \"ObjectId\":\"13635\"\r\n     }\r\n}"
+                }
+              }
+            }
+          }
+        },
+        "responses" : {
+          "200" : {
+            "description" : "successful operation"
+          }
+        }
+      }
+    },
+    "/spic/StatisticsController/rest/StartBuild" : {
+      "post" : {
+        "tags" : [ "Статистики данных" ],
+        "summary" : "Запрос получения данных",
+        "parameters" : [ {
+          "name" : "ScoutAuthorization",
+          "in" : "header",
+          "required" : false,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "string"
+          },
+          "example" : "52add63a-380f-4524-932e-e41a53b9cb8a"
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/rest_StartBuild_body"
+              },
+              "examples" : {
+                "demo" : {
+                  "value" : "{\"StatisticsSessionId\":\"1ff6f723-01aa-4798-9956-4cd868ce30b6\"}"
+                }
+              }
+            }
+          }
+        },
+        "responses" : {
+          "200" : {
+            "description" : "successful operation"
+          }
+        }
+      }
+    },
+    "/spic/StatisticsController/rest/CancelStatisticsSession" : {
+      "post" : {
+        "tags" : [ "Статистики данных" ],
+        "summary" : "Закрыть сессию статистик",
+        "parameters" : [ {
+          "name" : "ScoutAuthorization",
+          "in" : "header",
+          "required" : false,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "string"
+          },
+          "example" : "e41e1e70-3682-4bff-8986-b72e2b8cba5c"
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/rest_CancelStatisticsSession_body"
+              },
+              "examples" : {
+                "demo" : {
+                  "value" : "{\"StatisticsSessionId\":\"938eddbd-3a40-4a76-a283-42aeec51e0a0\"}"
+                }
+              }
+            }
+          }
+        },
+        "responses" : {
+          "200" : {
+            "description" : "successful operation"
+          }
+        }
+      }
+    },
+    "/spic/NavigationFiltration/rest/AddStatisticsRequest" : {
+      "post" : {
+        "tags" : [ "Статистики данных" ],
+        "description" : "Auto generated using Swagger Inspector",
+        "parameters" : [ {
+          "name" : "ScoutAuthorization",
+          "in" : "header",
+          "required" : false,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "string"
+          },
+          "example" : "e41e1e70-3682-4bff-8986-b72e2b8cba5c"
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/rest_AddStatisticsRequest_body"
+              },
+              "examples" : {
+                "demo" : {
+                  "value" : "{\"Session\":{\"StatisticsSessionId\":\"8a95b843-f55c-41f9-a801-9431ed050f49\"},\"Settings\":{\"NavigationValidationFilter\":{\"ExcludeValidPoints\":false,\"ExcludeInvalidPoints\":false,\"ExcludeNotValidatedPoints\":true},\"TrackPeriodsFilter\":{\"ExcludeRecoilPoints\":false,\"ExcludeNotMovePoints\":true,\"IncludeParkingPoints\":true}}}"
+                }
+              }
+            }
+          }
+        },
+        "responses" : {
+          "200" : {
+            "description" : "successful operation"
+          }
+        }
+      }
+    },
+    "/spic/OnlineDataService/rest/Subscribe" : {
+      "post" : {
+        "tags" : [ "Получение онлайн данных" ],
+        "summary" : "Подписка на получение онлайн данных",
+        "description" : "Создание подписки на получение данных",
+        "parameters" : [ {
+          "name" : "ScoutAuthorization",
+          "in" : "header",
+          "required" : false,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "string"
+          },
+          "example" : "e41e1e70-3682-4bff-8986-b72e2b8cba5c"
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/rest_Subscribe_body"
+              },
+              "examples" : {
+                "demo" : {
+                  "value" : "{\"UnitIds\":[\"13635\",\"13634\"]}"
+                }
+              }
+            }
+          }
+        },
+        "responses" : {
+          "200" : {
+            "description" : "successful operation"
+          }
+        },
+        "servers" : [ {
+          "url" : "http://login.scout-gps.ru:8081"
+        } ]
+      }
+    },
+    "/spic/OnlineDataService/rest/GetOnlineData" : {
+      "post" : {
+        "tags" : [ "Получение онлайн данных" ],
+        "summary" : "Получить данные по подписке",
+        "description" : "Запрос текущих данных",
+        "parameters" : [ {
+          "name" : "ScoutAuthorization",
+          "in" : "header",
+          "required" : false,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "string"
+          },
+          "example" : "e41e1e70-3682-4bff-8986-b72e2b8cba5c"
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/rest_GetOnlineData_body"
+              },
+              "examples" : {
+                "demo" : {
+                  "value" : "{\"Id\":\"bcea5292-f7a3-48b3-ad3f-e67a153c3782\"}"
+                }
+              }
+            }
+          }
+        },
+        "responses" : {
+          "200" : {
+            "description" : "successful operation"
+          }
+        }
+      }
+    },
+    "/spic/OnlineDataService/rest/Unsubscribe" : {
+      "post" : {
+        "tags" : [ "Получение онлайн данных" ],
+        "summary" : "Отписаться от получения онлайн данных",
+        "description" : "Отписаться от получения онлайн данных",
+        "parameters" : [ {
+          "name" : "ScoutAuthorization",
+          "in" : "header",
+          "required" : false,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "string"
+          },
+          "example" : "e41e1e70-3682-4bff-8986-b72e2b8cba5c"
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/rest_Unsubscribe_body"
+              },
+              "examples" : {
+                "demo" : {
+                  "value" : "{\"Id\":\"bcea5292-f7a3-48b3-ad3f-e67a153c3782\"}"
+                }
+              }
+            }
+          }
+        },
+        "responses" : {
+          "200" : {
+            "description" : "successful operation"
+          }
+        }
+      }
+    },
+    "/spic/OnlineDataWithSensorsService/rest/Subscribe" : {
+      "post" : {
+        "tags" : [ "Получение онлайн данных" ],
+        "summary" : "Подписка на получение онлайн данных с датчиками",
+        "description" : "Создание подписки на получение данных с датчиками <br> <a href=\"https://kb.scout-gps.ru/article/%D0%9A%D0%BE%D0%BD%D1%82%D1%80%D0%B0%D0%BA%D1%82%D1%8B-%D0%BE%D0%BD%D0%BB%D0%B0%D0%B9%D0%BD-%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D1%85-%D1%81-%D0%B4%D0%B0%D1%82%D1%87%D0%B8%D0%BA%D0%B0%D0%BC%D0%B8-%D0%A1%D0%9F%D0%98%D0%9A-506.html#sensors_table\" target=\"_blank\">Таблица типов датчиков для передачи в запросе</a>",
+        "parameters" : [ {
+          "name" : "ScoutAuthorization",
+          "in" : "header",
+          "required" : false,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "string"
+          },
+          "example" : "e41e1e70-3682-4bff-8986-b72e2b8cba5c"
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/rest_Subscribe_body_1"
+              },
+              "examples" : {
+                "demo" : {
+                  "value" : "{\"UnitIds\":[\"13640\"],\"SensorTypes\":[\"30004\"]}"
+                }
+              }
+            }
+          }
+        },
+        "responses" : {
+          "200" : {
+            "description" : "successful operation"
+          }
+        }
+      }
+    },
+    "/spic/OnlineDataWithSensorsService/rest/GetOnlineData" : {
+      "post" : {
+        "tags" : [ "Получение онлайн данных" ],
+        "summary" : "Получить данные по подписке со значением датчиков",
+        "description" : "Запрос текущих данных со значениями датчиков",
+        "parameters" : [ {
+          "name" : "ScoutAuthorization",
+          "in" : "header",
+          "required" : false,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "string"
+          },
+          "example" : "e41e1e70-3682-4bff-8986-b72e2b8cba5c"
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/rest_GetOnlineData_body_1"
+              },
+              "examples" : {
+                "demo" : {
+                  "value" : "{\"Id\":\"bcea5292-f7a3-48b3-ad3f-e67a153c3782\"}"
+                }
+              }
+            }
+          }
+        },
+        "responses" : {
+          "200" : {
+            "description" : "successful operation"
+          }
+        }
+      }
+    },
+    "/spic/OnlineDataWithSensorsService/rest/Unsubscribe" : {
+      "post" : {
+        "tags" : [ "Получение онлайн данных" ],
+        "summary" : "Отписаться от получения онлайн данных со значением датчиков",
+        "description" : "Отписаться от получения онлайн данных со значением датчиков",
+        "parameters" : [ {
+          "name" : "ScoutAuthorization",
+          "in" : "header",
+          "required" : false,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "string"
+          },
+          "example" : "e41e1e70-3682-4bff-8986-b72e2b8cba5c"
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/rest_Unsubscribe_body_1"
+              },
+              "examples" : {
+                "demo" : {
+                  "value" : "{\"Id\":\"bcea5292-f7a3-48b3-ad3f-e67a153c3782\"}"
+                }
+              }
+            }
+          }
+        },
+        "responses" : {
+          "200" : {
+            "description" : "successful operation"
+          }
+        }
+      }
+    },
+    "/spic/AnalogSensor/rest/GetStatistics" : {
+      "post" : {
+        "tags" : [ "Статистики данных" ],
+        "description" : "Запрос статистик по аналоговым датчикам.<br> <a href=\"https://kb.scout-gps.ru/article/СПИК-Запрос-статистик-по-аналоговым-датчикам-3400.html\">Статья в БЗ</a>",
+        "parameters" : [ {
+          "name" : "ScoutAuthorization",
+          "in" : "header",
+          "required" : false,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "string"
+          },
+          "example" : "52add63a-380f-4524-932e-e41a53b9cb8a"
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/rest_GetStatistics_body"
+              },
+              "examples" : {
+                "demo" : {
+                  "value" : "{\"StatisticsSessionId\":\"1ff6f723-01aa-4798-9956-4cd868ce30b6\"}"
+                }
+              }
+            }
+          }
+        },
+        "responses" : {
+          "200" : {
+            "description" : "successful operation"
+          }
+        }
+      }
+    },
+    "/spic/AnalogSensor/rest/AddStatisticsRequest" : {
+      "post" : {
+        "tags" : [ "Статистики данных" ],
+        "description" : "Auto generated using Swagger Inspector",
+        "parameters" : [ {
+          "name" : "ScoutAuthorization",
+          "in" : "header",
+          "required" : false,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "string"
+          },
+          "example" : "52add63a-380f-4524-932e-e41a53b9cb8a"
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/rest_AddStatisticsRequest_body_1"
+              },
+              "examples" : {
+                "demo" : {
+                  "value" : "{\r\n \r\n     \"Session\":{\"StatisticsSessionId\":\"1ff6f723-01aa-4798-9956-4cd868ce30b6\"},\r\n \r\n     \"Settings\":{\"SensorNumbers\":null}\r\n}"
+                }
+              }
+            }
+          }
+        },
+        "responses" : {
+          "200" : {
+            "description" : "successful operation"
+          }
+        }
+      }
+    },
+    "/spic/reports/rest/GetAvailableReports" : {
+      "get" : {
+        "tags" : [ "Запрос отчетов" ],
+        "summary" : "Получение списка доступных отчетов",
+        "description" : "Получение списка отчетов доступных пользователю",
+        "parameters" : [ {
+          "name" : "ScoutAuthorization",
+          "in" : "header",
+          "required" : false,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "string"
+          },
+          "example" : "e41e1e70-3682-4bff-8986-b72e2b8cba5c"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "content" : {
+              "application/json; charset=utf-8" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/inline_response_200_1"
+                },
+                "examples" : {
+                  "200" : {
+                    "value" : {
+                      "ReportInfos" : {
+                        "ReportInfos" : [ {
+                          "Description" : "Отчет предоставляет информацию обо всех стоянках и движении между стоянками. Выводится посуточная и общая статистика работы транспорта.",
+                          "Id" : "45a532ec-dff2-44f0-98e8-c8780604b894",
+                          "Title" : "Движения и стоянки"
+                        }, {
+                          "Description" : "Отчёт «Плата за проезд по трассам» позволяет оценить затраты на перевозки по трассам с учётом имеющейся собранной информации.",
+                          "Id" : "df9764e0-2987-43db-8474-da1eed7892d6",
+                          "Title" : "Плата за проезд по трассам"
+                        }, {
+                          "Description" : "Отчёт предоставляет информацию о срабатываниях универсального датчика, времени в активном и пассивном состоянии. \r\nВедётся учёт работы в геозонах, возможна настройка объединения срабатываний по времени между событиями.",
+                          "Id" : "fc8ec966-3779-47d7-b579-9514541b0566",
+                          "Title" : "Отчёт по датчикам"
+                        }, {
+                          "Description" : "В этом отчете отображаются итоговые данные за указанный промежуток времени по выбранным показателям работы ТС (время работы в разных режимах, данные по топливу, пробег, максимальная и средняя скорость, время движения, разрывов и стоянок).",
+                          "Id" : "df541dd4-7689-478a-995e-c0b7977e187b",
+                          "Title" : "Статистики"
+                        }, {
+                          "Description" : "Посещения геозон",
+                          "Id" : "30429ecf-d4c4-4d51-9147-aabfe7ef70e1",
+                          "Title" : "Посещения геозон"
+                        }, {
+                          "Description" : "Заправки и сливы (групповой)",
+                          "Id" : "3eae842f-8591-4cb1-9c05-5233c0379dd5",
+                          "Title" : "Заправки и сливы (групповой)"
+                        }, {
+                          "Description" : "Отчет представляет статистики об использовании автомобилей, в том числе и информацию о работе в выходные дни и вне рабочего времени, с учетом местного часового пояса.",
+                          "Id" : "1fcc3e2f-6154-4c39-93ad-c65341011264",
+                          "Title" : "Использование автопарка (сводный)"
+                        }, {
+                          "Description" : "В отчете предоставляется информация о перемещениях \r\nи состоянии СКАУТ-Маяков",
+                          "Id" : "225ffd25-5107-4551-ba67-b837a857dab5",
+                          "Title" : "Перемещение Маяков"
+                        }, {
+                          "Description" : "Отчет предоставляет информацию обо всех стоянках и движении между стоянками, а также расходе топлива, сливах и заправках. Выводится посуточная и общая статистика работы транспорта.",
+                          "Id" : "f2cd22bd-08ec-4687-b9f7-da97d17787f5",
+                          "Title" : "Движения и стоянки с топливом"
+                        }, {
+                          "Description" : "«Поездка» - период эксплуатации ТС одним конкретным водителем, но не более суток.\r\nДля корректной работы отчета необходимо устройство идентификации водителя.\r\nОтчет можно построить как по водителям, так и по транспортным средствам. В нём содержится суммарная информация об использовании водителями ТС, о поездках водителей на ТС в хронологическом порядке, а также сводная информация о водителе или о ТС (зависит от выбранных настроек отчёта).\r\n",
+                          "Id" : "6654876a-a257-4623-9f3c-a86898719b50",
+                          "Title" : "Поездки водителей"
+                        }, {
+                          "Description" : "В этом отчете предоставляется информация о расходе топлива за период по показаниям ДРТ (датчика расхода топлива).",
+                          "Id" : "f4c9cac9-ff3e-40d9-940a-e4065b689cb6",
+                          "Title" : "Расход по ДРТ"
+                        }, {
+                          "Description" : "В этом отчете отображается список заправок и сливов топлива с определением времени, объема в литрах и места этих событий. Расход топлива определяется косвенно, по изменению уровня.",
+                          "Id" : "22111ab1-fdfe-4d91-9a36-5f3704ea30dd",
+                          "Title" : "Заправки и сливы топлива"
+                        }, {
+                          "Description" : "В этом отчете отображаются сводные данные по пробегу по нескольким ТС, разбитые по суткам с итоговыми данными. Из таблицы отчета можно построить индивидуальный отчет «Движения и стоянки» по каждому из ТС.",
+                          "Id" : "025cc8ae-b177-4b0a-82f0-5dcf68185d25",
+                          "Title" : "Движения и стоянки (сводный)"
+                        }, {
+                          "Description" : "Отчет представляет расширенные статистики об использовании автомобилей, в том числе и информацию о работе в выходные дни и вне рабочего времени, с учетом часового пояса для каждого конкретного ТС.\r\nДля удобства подготовки различных сводных отчетов, таблица отчета может содержать столбцы с различными справочными данными.",
+                          "Id" : "a055c3a2-3465-4711-bbc8-d83caa93c096",
+                          "Title" : "Использование автопарка"
+                        } ],
+                        "TemplateInfos" : [ {
+                          "Id" : "df3a087a-bf1b-412d-8c7f-a5af81e842e0",
+                          "ReportId" : "45a532ec-dff2-44f0-98e8-c8780604b894",
+                          "Title" : "Standard"
+                        }, {
+                          "Id" : "b9bdb011-b108-49cf-9c53-2c611651b94a",
+                          "ReportId" : "df9764e0-2987-43db-8474-da1eed7892d6",
+                          "Title" : "Плата за проезд по трассам"
+                        }, {
+                          "Id" : "4ddd4734-64c9-4143-b951-b828d5c72578",
+                          "ReportId" : "fc8ec966-3779-47d7-b579-9514541b0566",
+                          "Title" : "Standard"
+                        }, {
+                          "Id" : "8e65b09d-c7f0-40ff-a84d-32e023234251",
+                          "ReportId" : "df541dd4-7689-478a-995e-c0b7977e187b",
+                          "Title" : "Стандартный"
+                        }, {
+                          "Id" : "8096d204-2f43-493e-8832-868dc888d209",
+                          "ReportId" : "3eae842f-8591-4cb1-9c05-5233c0379dd5",
+                          "Title" : "Standard"
+                        }, {
+                          "Id" : "7945d79f-3b8e-4e41-8651-2331b62949d6",
+                          "ReportId" : "1fcc3e2f-6154-4c39-93ad-c65341011264",
+                          "Title" : "Standard"
+                        }, {
+                          "Id" : "6a9e005f-82ed-41ef-97b9-8c16ee6c52d9",
+                          "ReportId" : "225ffd25-5107-4551-ba67-b837a857dab5",
+                          "Title" : "Standard"
+                        }, {
+                          "Id" : "b4ec4afd-97f0-434c-b8c8-94de725e60ba",
+                          "ReportId" : "f2cd22bd-08ec-4687-b9f7-da97d17787f5",
+                          "Title" : "Standard"
+                        }, {
+                          "Id" : "8465fb31-ac34-4683-8a4d-e06683eb0cd1",
+                          "ReportId" : "6654876a-a257-4623-9f3c-a86898719b50",
+                          "Title" : "Standard"
+                        }, {
+                          "Id" : "951bab40-f04b-4db2-9119-bdef7a3ca2e6",
+                          "ReportId" : "f4c9cac9-ff3e-40d9-940a-e4065b689cb6",
+                          "Title" : "Standard"
+                        }, {
+                          "Id" : "81a5f84f-4b2f-415c-946d-22bb779b9570",
+                          "ReportId" : "22111ab1-fdfe-4d91-9a36-5f3704ea30dd",
+                          "Title" : "Standard"
+                        }, {
+                          "Id" : "71a8a550-cff1-44ab-8582-1ed83da02864",
+                          "ReportId" : "025cc8ae-b177-4b0a-82f0-5dcf68185d25",
+                          "Title" : "Standard"
+                        }, {
+                          "Id" : "89b8f51c-13bc-444f-8619-40476fc41c62",
+                          "ReportId" : "a055c3a2-3465-4711-bbc8-d83caa93c096",
+                          "Title" : "Стандартный"
+                        }, {
+                          "Id" : "eb2b55fa-26c2-46de-bae9-314bf86941bd",
+                          "ReportId" : "3eae842f-8591-4cb1-9c05-5233c0379dd5",
+                          "Title" : "без разрывов"
+                        } ]
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/spic/reports/rest/BuildReports" : {
+      "post" : {
+        "tags" : [ "Запрос отчетов" ],
+        "summary" : "Запрос отчетов",
+        "description" : ".",
+        "parameters" : [ {
+          "name" : "ScoutAuthorization",
+          "in" : "header",
+          "required" : false,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "string"
+          },
+          "example" : "e41e1e70-3682-4bff-8986-b72e2b8cba5c"
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/rest_BuildReports_body"
+              },
+              "examples" : {
+                "demo" : {
+                  "value" : {
+                    "ReportTemplateId" : "81a5f84f-4b2f-415c-946d-22bb779b9570",
+                    "ReportType" : "22111ab1-fdfe-4d91-9a36-5f3704ea30dd",
+                    "ReportTargetType" : {
+                      "Value" : "Unit"
+                    },
+                    "ReportTargetCardinalityType" : {
+                      "Value" : "One"
+                    },
+                    "OutputFormat" : {
+                      "Value" : "pdf"
+                    },
+                    "Targets" : [ "19420", "19429", "19421", "19422", "19424", "19425", "19426", "19427", "19428" ],
+                    "BeginDateTime" : "/Date(1586066586207)/",
+                    "EndDateTime" : "/Date(1586152986207)/",
+                    "Emails" : [ "some@email.com" ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses" : {
+          "200" : {
+            "description" : "successful operation"
+          }
+        }
+      }
+    }
+  },
+  "components" : {
+    "schemas" : {
+      "rest_Login_body" : {
+        "type" : "object",
+        "properties" : {
+          "CultureName" : {
+            "type" : "string"
+          },
+          "TimeZoneOlsonId" : {
+            "type" : "string"
+          },
+          "UiCultureName" : {
+            "type" : "string"
+          },
+          "Login" : {
+            "type" : "string"
+          },
+          "Password" : {
+            "type" : "string"
+          }
+        }
+      },
+      "inline_response_200" : {
+        "type" : "object",
+        "properties" : {
+          "ExpireDate" : {
+            "type" : "string"
+          },
+          "IsAuthenticated" : {
+            "type" : "boolean"
+          },
+          "IsAuthorized" : {
+            "type" : "boolean"
+          },
+          "SessionId" : {
+            "type" : "string"
+          },
+          "UserId" : {
+            "type" : "string"
+          },
+          "UserName" : {
+            "type" : "string"
+          }
+        }
+      },
+      "rest_getAllUnitsPaged_body" : {
+        "type" : "object",
+        "properties" : {
+          "Count" : {
+            "type" : "integer"
+          },
+          "Offset" : {
+            "type" : "integer"
+          }
+        }
+      },
+      "spicunitsrestgetUnits_Requests" : {
+        "type" : "object",
+        "properties" : {
+          "ObjectId" : {
+            "type" : "integer"
+          }
+        },
+        "example" : null
+      },
+      "rest_getUnits_body" : {
+        "type" : "object",
+        "properties" : {
+          "Requests" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/spicunitsrestgetUnits_Requests"
+            }
+          }
+        }
+      },
+      "rest_getDrivers_body" : {
+        "type" : "object",
+        "properties" : {
+          "Requests" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/spicunitsrestgetUnits_Requests"
+            }
+          }
+        }
+      },
+      "spicStatisticsControllerrestStartStatisticsSession_Period" : {
+        "type" : "object",
+        "properties" : {
+          "Begin" : {
+            "type" : "string"
+          },
+          "End" : {
+            "type" : "string"
+          }
+        },
+        "example" : null
+      },
+      "spicStatisticsControllerrestStartStatisticsSession_TargetObject" : {
+        "type" : "object",
+        "properties" : {
+          "ObjectId" : {
+            "type" : "string"
+          },
+          "ObjectTypeId" : {
+            "type" : "string"
+          }
+        },
+        "example" : null
+      },
+      "rest_StartStatisticsSession_body" : {
+        "type" : "object",
+        "properties" : {
+          "Period" : {
+            "$ref" : "#/components/schemas/spicStatisticsControllerrestStartStatisticsSession_Period"
+          },
+          "TargetObject" : {
+            "$ref" : "#/components/schemas/spicStatisticsControllerrestStartStatisticsSession_TargetObject"
+          }
+        }
+      },
+      "rest_StartBuild_body" : {
+        "type" : "object",
+        "properties" : {
+          "StatisticsSessionId" : {
+            "type" : "string"
+          }
+        }
+      },
+      "rest_CancelStatisticsSession_body" : {
+        "type" : "object",
+        "properties" : {
+          "StatisticsSessionId" : {
+            "type" : "string"
+          }
+        }
+      },
+      "spicNavigationFiltrationrestAddStatisticsRequest_Settings_NavigationValidationFilter" : {
+        "type" : "object",
+        "properties" : {
+          "ExcludeNotValidatedPoints" : {
+            "type" : "boolean"
+          },
+          "ExcludeValidPoints" : {
+            "type" : "boolean"
+          },
+          "ExcludeInvalidPoints" : {
+            "type" : "boolean"
+          }
+        },
+        "example" : null
+      },
+      "spicNavigationFiltrationrestAddStatisticsRequest_Settings_TrackPeriodsFilter" : {
+        "type" : "object",
+        "properties" : {
+          "IncludeParkingPoints" : {
+            "type" : "boolean"
+          },
+          "ExcludeNotMovePoints" : {
+            "type" : "boolean"
+          },
+          "ExcludeRecoilPoints" : {
+            "type" : "boolean"
+          }
+        },
+        "example" : null
+      },
+      "spicNavigationFiltrationrestAddStatisticsRequest_Settings" : {
+        "type" : "object",
+        "properties" : {
+          "NavigationValidationFilter" : {
+            "$ref" : "#/components/schemas/spicNavigationFiltrationrestAddStatisticsRequest_Settings_NavigationValidationFilter"
+          },
+          "TrackPeriodsFilter" : {
+            "$ref" : "#/components/schemas/spicNavigationFiltrationrestAddStatisticsRequest_Settings_TrackPeriodsFilter"
+          }
+        },
+        "example" : null
+      },
+      "spicNavigationFiltrationrestAddStatisticsRequest_Session" : {
+        "type" : "object",
+        "properties" : {
+          "StatisticsSessionId" : {
+            "type" : "string"
+          }
+        },
+        "example" : null
+      },
+      "rest_AddStatisticsRequest_body" : {
+        "type" : "object",
+        "properties" : {
+          "Settings" : {
+            "$ref" : "#/components/schemas/spicNavigationFiltrationrestAddStatisticsRequest_Settings"
+          },
+          "Session" : {
+            "$ref" : "#/components/schemas/spicNavigationFiltrationrestAddStatisticsRequest_Session"
+          }
+        }
+      },
+      "rest_Subscribe_body" : {
+        "type" : "object",
+        "properties" : {
+          "UnitIds" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          }
+        }
+      },
+      "rest_GetOnlineData_body" : {
+        "type" : "object",
+        "properties" : {
+          "Id" : {
+            "type" : "string"
+          }
+        }
+      },
+      "rest_Unsubscribe_body" : {
+        "type" : "object",
+        "properties" : {
+          "Id" : {
+            "type" : "string"
+          }
+        }
+      },
+      "rest_Subscribe_body_1" : {
+        "type" : "object",
+        "properties" : {
+          "UnitIds" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "sensorTypes" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          }
+        }
+      },
+      "rest_GetOnlineData_body_1" : {
+        "type" : "object",
+        "properties" : {
+          "Id" : {
+            "type" : "string"
+          }
+        }
+      },
+      "rest_Unsubscribe_body_1" : {
+        "type" : "object",
+        "properties" : {
+          "Id" : {
+            "type" : "string"
+          }
+        }
+      },
+      "rest_GetStatistics_body" : {
+        "type" : "object",
+        "properties" : {
+          "StatisticsSessionId" : {
+            "type" : "string"
+          }
+        }
+      },
+      "spicAnalogSensorrestAddStatisticsRequest_Settings" : {
+        "type" : "object",
+        "properties" : {
+          "SensorNumbers" : { }
+        },
+        "example" : null
+      },
+      "rest_AddStatisticsRequest_body_1" : {
+        "type" : "object",
+        "properties" : {
+          "Settings" : {
+            "$ref" : "#/components/schemas/spicAnalogSensorrestAddStatisticsRequest_Settings"
+          },
+          "Session" : {
+            "$ref" : "#/components/schemas/spicNavigationFiltrationrestAddStatisticsRequest_Session"
+          }
+        }
+      },
+      "inline_response_200_1" : {
+        "type" : "object",
+        "properties" : {
+          "ReportInfos" : {
+            "type" : "string"
+          }
+        }
+      },
+      "rest_BuildReports_body" : {
+        "type" : "object",
+        "properties" : {
+          "ReportTemplateId" : {
+            "type" : "string"
+          },
+          "ReportType" : {
+            "type" : "string"
+          },
+          "ReportTargetType" : {
+            "type" : "string"
+          },
+          "ReportTargetCardinalityType" : {
+            "type" : "string"
+          },
+          "OutputFormat" : {
+            "type" : "string"
+          },
+          "Targets" : {
+            "type" : "string"
+          },
+          "BeginDateTime" : {
+            "type" : "string"
+          },
+          "EndDateTime" : {
+            "type" : "string"
+          },
+          "Emails" : {
+            "type" : "string"
+          }
+        }
+      }
+    }
+  }
+}
